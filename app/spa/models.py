@@ -6,7 +6,7 @@ from enum import StrEnum, auto
 from pydantic import EmailStr
 from sqlmodel import DECIMAL, AutoString, Column, Field, Relationship, SQLModel
 
-from .core.models import BaseModel
+from ..core.models import BaseModel
 
 
 class AppointmentStatus(StrEnum):
