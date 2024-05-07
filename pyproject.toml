@@ -12,6 +12,7 @@ dependencies = [
     "sqlmodel>=0.0.18",
     "sqlalchemy[asyncio]>=2.0.30",
     "alembic>=1.13.1",
+    "starlette-admin>=0.13.2",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
@@ -37,7 +38,7 @@ debug = [
 ]
 
 [tool.pdm.scripts]
-dev = "fastapi dev"
+dev = "dotenv run fastapi dev"
 check-fix = "ruff check --fix"
 _format = "ruff format"
 format = {composite = ["check-fix" , "_format"]}

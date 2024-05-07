@@ -70,3 +70,6 @@ class Appointment(BaseModel, table=True):
     services: list[Service] = Relationship(
         back_populates="appointments", link_model=AppointmentServiceLink
     )
+
+    # TODO: implement total_duration
+    # TODO: implement total_price

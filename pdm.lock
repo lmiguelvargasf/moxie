@@ -5,7 +5,7 @@
 groups = ["default", "config", "lint", "debug"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:9d55af59abc9ebeed993f42eecdf319ff63c9975e166bb581273e01356b99f55"
+content_hash = "sha256:176a79a802b7e432c97cf4c08ecab97aa84a1ef4cc053c9bb403f0067bcf2580"
 
 [[package]]
 name = "alembic"
@@ -613,6 +613,22 @@ dependencies = [
 files = [
     {file = "starlette-0.37.2-py3-none-any.whl", hash = "sha256:6fe59f29268538e5d0d182f2791a479a0c64638e6935d1c6989e63fb2699c6ee"},
     {file = "starlette-0.37.2.tar.gz", hash = "sha256:9af890290133b79fc3db55474ade20f6220a364a0402e0b556e7cd5e1e093823"},
+]
+
+[[package]]
+name = "starlette-admin"
+version = "0.13.2"
+requires_python = ">=3.8"
+summary = "Fast, beautiful and extensible administrative interface framework for Starlette/FastApi applications"
+groups = ["default"]
+dependencies = [
+    "jinja2<4,>=3",
+    "python-multipart",
+    "starlette",
+]
+files = [
+    {file = "starlette_admin-0.13.2-py3-none-any.whl", hash = "sha256:95b60ce71f05696df49d95b8664726abb9e3f76a44b49aeea25d1d6b68c039ed"},
+    {file = "starlette_admin-0.13.2.tar.gz", hash = "sha256:4a2ee4e5e24b49aaaa6c034ba7f538a6accdd736c4ae7ea2c38cfb0c2c09bcce"},
 ]
 
 [[package]]
