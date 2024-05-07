@@ -71,5 +71,12 @@ class Appointment(BaseModel, table=True):
         back_populates="appointments", link_model=AppointmentServiceLink
     )
 
-    # TODO: implement total_duration
-    # TODO: implement total_price
+    @property
+    def total_duration(self) -> int:
+        """Calculate total duration from all associated services."""
+        return sum(service.duration for service in self.services if service.duration)
+
+    @property
+    def total_price(self) -> Decimal:
+        """Calculate total price from all associated services."""
+        return sum(service.price for service in self.services if service.price)
