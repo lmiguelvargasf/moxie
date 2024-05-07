@@ -1,19 +1,20 @@
 # Enum for Appointment status
 from datetime import datetime
 from decimal import Decimal
-from enum import Enum
+from enum import StrEnum, auto
 
 from pydantic import EmailStr
 from sqlmodel import AutoString, Column, Field, SQLModel, DECIMAL, Relationship
+from sqlalchemy.dialects.postgresql import ENUM
 
 
 from .core.models import BaseModel
 
 
-class AppointmentStatus(str, Enum):
-    scheduled = "scheduled"
-    completed = "completed"
-    canceled = "canceled"
+class AppointmentStatus(StrEnum):
+    SCHEDULE = auto()
+    completed = auto()
+    canceled = auto()
 
 
 class MedSpa(BaseModel, table=True):
@@ -28,7 +29,12 @@ class MedSpa(BaseModel, table=True):
     services: list["Service"] = Relationship(back_populates="med_spa")
 
 
-#     appointments: list["Appointment"] = Relationship(back_populates="med_spa")
+    appointments: list["Appointment"] = Relationship(back_populates="med_spa")
+
+# class AppointmentServiceLink(SQLModel, table=True):
+#     """Junction table for many-to-many relationship between Appointments and Services."""
+#     appointment_id: int = Field(foreign_key="appointment.id", primary_key=True)
+#     service_id: int = Field(foreign_key="service.id", primary_key=True)
 
 
 class Service(BaseModel, table=True):
@@ -48,21 +54,17 @@ class Service(BaseModel, table=True):
     # appointments: list["Appointment"] = Relationship(back_populates="services", link_model="AppointmentService")
 
 
-# class Appointment(BaseModel, table=True):
-#     """Model representing an appointment at a MedSpa."""
+class Appointment(BaseModel, table=True):
+    """Model representing an appointment at a MedSpa."""
 
-#     start_time: datetime
-#     total_duration: int | None # Auto-calculated
-#     total_price: float | None # Auto-calculated
-#     status: AppointmentStatus = Field(sa_column=Column("status", nullable=False, server_default=AppointmentStatus.scheduled))
+    start_time: datetime
+    # total_duration: int | None # Auto-calculated
+    # total_price: float | None # Auto-calculated
+    status: AppointmentStatus
 
-#     med_spa_id: int = Field(foreign_key="med_spa.id")
-#     med_spa: MedSpa = Relationship(back_populates="appointments")
+    med_spa_id: int = Field(foreign_key="med_spa.id")
+    med_spa: MedSpa = Relationship(back_populates="appointments")
 
-#     # Relationship with services
-#     services: list[Service] = Relationship(back_populates="appointments", link_model="AppointmentService")
+    # Relationship with services
+    # services: list[Service] = Relationship(back_populates="appointments", link_model="AppointmentService")
 
-# class AppointmentService(SQLModel, table=True):
-#     """Junction table for many-to-many relationship between Appointments and Services."""
-#     appointment_id: int = Field(foreign_key="appointment.uuid", primary_key=True)
-#     service_id: int = Field(foreign_key="service.uuid", primary_key=True)
