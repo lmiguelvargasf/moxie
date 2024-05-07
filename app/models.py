@@ -31,10 +31,11 @@ class MedSpa(BaseModel, table=True):
 
     appointments: list["Appointment"] = Relationship(back_populates="med_spa")
 
-# class AppointmentServiceLink(SQLModel, table=True):
-#     """Junction table for many-to-many relationship between Appointments and Services."""
-#     appointment_id: int = Field(foreign_key="appointment.id", primary_key=True)
-#     service_id: int = Field(foreign_key="service.id", primary_key=True)
+
+class AppointmentServiceLink(SQLModel, table=True):
+    """Junction table for many-to-many relationship between Appointments and Services."""
+    appointment_id: int = Field(foreign_key="appointment.id", primary_key=True)
+    service_id: int = Field(foreign_key="service.id", primary_key=True)
 
 
 class Service(BaseModel, table=True):
@@ -51,7 +52,7 @@ class Service(BaseModel, table=True):
     med_spa: MedSpa = Relationship(back_populates="services")
 
     # Relationship to appointments through a secondary table
-    # appointments: list["Appointment"] = Relationship(back_populates="services", link_model="AppointmentService")
+    appointments: list["Appointment"] = Relationship(back_populates="services", link_model=AppointmentServiceLink)
 
 
 class Appointment(BaseModel, table=True):
@@ -66,5 +67,4 @@ class Appointment(BaseModel, table=True):
     med_spa: MedSpa = Relationship(back_populates="appointments")
 
     # Relationship with services
-    # services: list[Service] = Relationship(back_populates="appointments", link_model="AppointmentService")
-
+    services: list[Service] = Relationship(back_populates="appointments", link_model=AppointmentServiceLink)
