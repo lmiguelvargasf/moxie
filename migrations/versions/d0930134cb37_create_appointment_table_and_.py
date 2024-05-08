@@ -18,7 +18,7 @@ branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
 
-status_enum = sa.Enum("SCHEDULE", "completed", "canceled", name="appointmentstatus")
+status_enum = sa.Enum("SCHEDULED", "COMPLETED", "CANCELED", name="appointmentstatus")
 
 
 def upgrade() -> None:

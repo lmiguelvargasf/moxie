@@ -11,7 +11,7 @@ from .utils import camel_to_snake
 class IDMixin(SQLModel):
     """Mixin class that adds a unique auto-increment integer ID field."""
 
-    id: int = Field(
+    id: int | None = Field(
         default=None, primary_key=True, sa_column_kwargs=dict(autoincrement=True)
     )
 

@@ -1,4 +1,3 @@
-# Enum for Appointment status
 from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum, auto
@@ -10,9 +9,9 @@ from ..core.models import BaseModel
 
 
 class AppointmentStatus(StrEnum):
-    SCHEDULE = auto()
-    completed = auto()
-    canceled = auto()
+    SCHEDULED = auto()
+    COMPLETED = auto()
+    CANCELED = auto()
 
 
 class MedSpa(BaseModel, table=True):
@@ -23,7 +22,7 @@ class MedSpa(BaseModel, table=True):
     phone_number: str
     email: EmailStr = Field(sa_type=AutoString, unique=True, nullable=False)
 
-    #     # Relationship with services and appointments
+    # Relationship with services and appointments
     services: list["Service"] = Relationship(back_populates="med_spa")
 
     appointments: list["Appointment"] = Relationship(back_populates="med_spa")
@@ -54,13 +53,10 @@ class Service(BaseModel, table=True):
         back_populates="services", link_model=AppointmentServiceLink
     )
 
-
 class Appointment(BaseModel, table=True):
     """Model representing an appointment at a MedSpa."""
 
     start_time: datetime
-    # total_duration: int | None # Auto-calculated
-    # total_price: float | None # Auto-calculated
     status: AppointmentStatus
 
     med_spa_id: int = Field(foreign_key="med_spa.id")
