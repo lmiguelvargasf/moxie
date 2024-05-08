@@ -5,7 +5,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import func, select
 
 from ..database import db_session
-from .models import Appointment, AppointmentCreate, AppointmentStatus, MedSpa, Service
+from .models import (
+    Appointment,
+    AppointmentCreate,
+    AppointmentStatus,
+    MedSpa,
+    Service,
+)
 
 services_router = APIRouter(prefix="/services")
 med_spas_router = APIRouter(prefix="/med-spas")
@@ -16,15 +22,14 @@ appointments_router = APIRouter(prefix="/appointments")
     "/",
     status_code=status.HTTP_201_CREATED,
 )
-async def create_user(
+async def create_service(
     service: Service, session: AsyncSession = Depends(db_session)
 ) -> Service:
-    med_spa = (
-        await session.exec(select(MedSpa).where(MedSpa.id == service.med_spa_id))
-    ).first()
+    med_spa: MedSpa | None = await session.get(MedSpa, service.med_spa_id)
     if med_spa is None:
         raise HTTPException(
-            status_code=404, detail=f"MedSpa with ID {service.med_spa_id} not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"MedSpa with ID {service.med_spa_id} not found.",
         )
 
     session.add(service)
@@ -33,28 +38,34 @@ async def create_user(
     return service
 
 
-@services_router.patch("/{service_id}", response_model=Service)
+@services_router.patch("/{service_id}")
 async def update_service(
     service_id: int, service: Service, session: AsyncSession = Depends(db_session)
-):
-    db_service: Service | None = await session.get(Service, service_id)
-    if db_service is None:
+) -> Service:
+    service: Service | None = await session.get(Service, service_id)
+    if service is None:
         raise HTTPException(
-            status_code=404, detail=f"Service with ID {service_id} not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Service with ID {service_id} not found.",
         )
     service_data = service.model_dump(exclude_unset=True)
-    db_service.sqlmodel_update(service_data)
-    session.add(db_service)
+    service.sqlmodel_update(service_data)
+    session.add(service)
     await session.commit()
-    await session.refresh(db_service)
-    return db_service
+    await session.refresh(service)
+    return service
 
 
-@services_router.get("/{service_id}", response_model=Service)
-async def get_service(service_id: int, session: AsyncSession = Depends(db_session)):
-    service: Service = await session.get(Service, service_id)
-    if not service:
-        raise HTTPException(status_code=404, detail="Service not found")
+@services_router.get("/{service_id}")
+async def read_service(
+    service_id: int, session: AsyncSession = Depends(db_session)
+) -> Service:
+    service: Service | None = await session.get(Service, service_id)
+    if service is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Service with ID {service_id} not found.",
+        )
     return service
 
 
@@ -74,51 +85,59 @@ async def read_services_for_medspa(
 async def create_appointment(
     appointment_data: AppointmentCreate, session: AsyncSession = Depends(db_session)
 ) -> Appointment:
-    med_spa = await session.get(MedSpa, appointment_data.med_spa_id)
-    if not med_spa:
-        raise HTTPException(status_code=404, detail="MedSpa not found")
+    med_spa_id = appointment_data.med_spa_id
+    med_spa: MedSpa | None = await session.get(MedSpa, med_spa_id)
+    if med_spa is None:
+        raise HTTPException(
+            status_code=404, detail=f"MedSpa with ID {med_spa_id} not found."
+        )
 
-    # Fetch and validate services
-    services = await session.exec(
-        select(Service).where(Service.id.in_(appointment_data.service_ids))
-    )
-    services_list = services.all()
-    if len(services_list) != len(appointment_data.service_ids):
+    service_ids = appointment_data.service_ids
+    services: list[Service] = (
+        await session.exec(select(Service).where(Service.id.in_(service_ids)))
+    ).all()
+    if len(services) != len(appointment_data.service_ids):
         raise HTTPException(status_code=404, detail="One or more services not found")
 
-    # Create the new appointment
-    new_appointment = Appointment(
+    appointment = Appointment(
         med_spa_id=appointment_data.med_spa_id,
         start_time=appointment_data.start_time,
         status=AppointmentStatus.SCHEDULED,
-        services=services_list,
+        total_duration=sum(service.duration for service in services),
+        total_price=sum(service.price for service in services),
+        services=services,
     )
 
-    session.add(new_appointment)
+    session.add(appointment)
     await session.commit()
-    await session.refresh(new_appointment)
-    return new_appointment
-
-
-@appointments_router.get("/{appointment_id}")
-async def get_appointment(
-    appointment_id: int, session: AsyncSession = Depends(db_session)
-) -> Appointment:
-    appointment = await session.get(Appointment, appointment_id)
-    if not appointment:
-        raise HTTPException(status_code=404, detail="Appointment not found")
+    await session.refresh(appointment)
     return appointment
 
 
-@appointments_router.patch("/{appointment_id}", response_model=Appointment)
+@appointments_router.get("/{appointment_id}")
+async def read_appointment(
+    appointment_id: int, session: AsyncSession = Depends(db_session)
+) -> Appointment:
+    appointment: Appointment | None = await session.get(Appointment, appointment_id)
+
+    if not appointment:
+        raise HTTPException(
+            status_code=404, detail=f"Appointment with ID {appointment_id} not found."
+        )
+    return appointment
+
+
+@appointments_router.patch("/{appointment_id}")
 async def update_appointment_status(
     appointment_id: int,
     status: AppointmentStatus,
     session: AsyncSession = Depends(db_session),
 ) -> Appointment:
-    appointment = await session.get(Appointment, appointment_id)
+    appointment: Appointment | None = await session.get(Appointment, appointment_id)
     if not appointment:
-        raise HTTPException(status_code=404, detail="Appointment not found")
+        raise HTTPException(
+            status_code=404, detail=f"Appointment with ID {appointment_id} not found."
+        )
 
     appointment.status = status
     session.add(appointment)
@@ -128,9 +147,9 @@ async def update_appointment_status(
 
 @appointments_router.get("/")
 async def list_appointments(
-    status: AppointmentStatus| None = None,
+    status: AppointmentStatus | None = None,
     start_date: date | None = None,
-    session: AsyncSession = Depends(db_session)
+    session: AsyncSession = Depends(db_session),
 ) -> list[Appointment]:
     query = select(Appointment)
     if status:
