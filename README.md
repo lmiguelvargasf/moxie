@@ -97,6 +97,20 @@ After the database setup, the following steps are followed to set up the project
 1. Access the admin tool by clicking on the following link: [`localhost:8000/admin`](http://localhost:8000/admin).
 
 
+## Data Setup and API Usage
+
+Create a med spa. You can do it by using the [admin tool](http://localhost:8000/admin/med-spa/list), `psql`, or any UI tool as [pgAdmin][].
+
+The list of available endpoints is in [localhost:8000/docs](http://localhost:8000/docs).
+In order to test the endpoints, feel free to use any tool you feel comfortable with like Postman, cURL, HTTPie, HTTPx, etc.
+
+### Postman Collection
+
+A [Postman][postman] collection has been included to test the endpoints that were implemented.
+In order to use this collection, it is assumed you will need to [install Postman](https://www.postman.com/downloads/).
+Then, you will need to import it.
+
+
 ## Assumptions and Rationales
 
 ### No Authentication Required
@@ -127,8 +141,10 @@ This assumption will avoid implementing inventory or slot management systems.
 
 
 [homebrew]: https://brew.sh/
+[pgAdmin]: https://www.pgadmin.org/
 [pdm]: https://pdm-project.org/latest/
 [postgresql]: https://www.postgresql.org/
 [postgres-linux]: https://askubuntu.com/questions/1206416/how-to-start-postgresql
 [postgres-windows]: https://stackoverflow.com/questions/36629963/how-can-i-start-postgresql-on-windows
+[postman]: https://www.postman.com/
 [python]: https://www.python.org/
