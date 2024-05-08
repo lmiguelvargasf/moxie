@@ -99,7 +99,8 @@ After the database setup, the following steps are followed to set up the project
 
 ## Data Setup and API Usage
 
-Create a med spa. You can do it by using the [admin tool](http://localhost:8000/admin/med-spa/list), `psql`, or any UI tool as [pgAdmin][].
+At least a med spa is assumed to exists in the database. There is no endpoint for this, so
+you can create it by using the [admin tool](http://localhost:8000/admin/med-spa/list), `psql`, or any UI tool as [pgAdmin][].
 
 The list of available endpoints is in [localhost:8000/docs](http://localhost:8000/docs).
 In order to test the endpoints, feel free to use any tool you feel comfortable with like Postman, cURL, HTTPie, HTTPx, etc.
