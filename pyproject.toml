@@ -39,6 +39,7 @@ debug = [
 
 [tool.pdm.scripts]
 dev = "dotenv run fastapi dev"
+migrate = "dotenv run alembic upgrade head"
 check-fix = "ruff check --fix"
 _format = "ruff format"
 format = {composite = ["check-fix" , "_format"]}
