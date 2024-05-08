@@ -23,7 +23,6 @@ class MedSpa(BaseModel, table=True):
     phone_number: str
     email: EmailStr = Field(sa_type=AutoString, unique=True, nullable=False)
 
-    # Relationship with services and appointments
     services: list["Service"] = Relationship(back_populates="med_spa")
 
     appointments: list["Appointment"] = Relationship(back_populates="med_spa")
@@ -49,10 +48,19 @@ class Service(BaseModel, table=True):
     med_spa_id: int = Field(foreign_key="med_spa.id")
     med_spa: MedSpa = Relationship(back_populates="services")
 
-    # Relationship to appointments through a secondary table
     appointments: list["Appointment"] = Relationship(
         back_populates="services", link_model=AppointmentServiceLink
     )
+
+class ServiceUpdate(PydanticBaseModel):
+
+    name: str | None = None
+    description: str | None = None
+    price: Decimal | None = Field(
+        default=None, sa_column=Column(DECIMAL(precision=10, scale=2), nullable=False)
+    )
+    duration: int | None = None
+
 
 class Appointment(BaseModel, table=True):
     """Model representing an appointment at a MedSpa."""

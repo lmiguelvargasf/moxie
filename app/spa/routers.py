@@ -11,6 +11,7 @@ from .models import (
     AppointmentStatus,
     MedSpa,
     Service,
+    ServiceUpdate,
 )
 
 services_router = APIRouter(prefix="/services")
@@ -40,7 +41,7 @@ async def create_service(
 
 @services_router.patch("/{service_id}")
 async def update_service(
-    service_id: int, service: Service, session: AsyncSession = Depends(db_session)
+    service_id: int, service_update: ServiceUpdate, session: AsyncSession = Depends(db_session)
 ) -> Service:
     service: Service | None = await session.get(Service, service_id)
     if service is None:
@@ -48,8 +49,8 @@ async def update_service(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Service with ID {service_id} not found.",
         )
-    service_data = service.model_dump(exclude_unset=True)
-    service.sqlmodel_update(service_data)
+    service_update_data = service_update.model_dump(exclude_unset=True)
+    service.sqlmodel_update(service_update_data)
     session.add(service)
     await session.commit()
     await session.refresh(service)
