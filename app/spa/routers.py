@@ -11,6 +11,7 @@ from .models import (
     AppointmentStatus,
     MedSpa,
     Service,
+    ServiceCreate,
     ServiceUpdate,
 )
 
@@ -24,15 +25,16 @@ appointments_router = APIRouter(prefix="/appointments")
     status_code=status.HTTP_201_CREATED,
 )
 async def create_service(
-    service: Service, session: AsyncSession = Depends(db_session)
+    service_create: ServiceCreate, session: AsyncSession = Depends(db_session)
 ) -> Service:
-    med_spa: MedSpa | None = await session.get(MedSpa, service.med_spa_id)
+    med_spa: MedSpa | None = await session.get(MedSpa, service_create.med_spa_id)
     if med_spa is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"MedSpa with ID {service.med_spa_id} not found.",
+            detail=f"MedSpa with ID {service_create.med_spa_id} not found.",
         )
 
+    service = Service.model_validate(service_create)
     session.add(service)
     await session.commit()
     await session.refresh(service)

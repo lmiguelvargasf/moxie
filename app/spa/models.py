@@ -41,7 +41,7 @@ class Service(BaseModel, table=True):
     name: str
     description: str
     price: Decimal = Field(
-        default=None, sa_column=Column(DECIMAL(precision=10, scale=2), nullable=False)
+        sa_column=Column(DECIMAL(precision=10, scale=2), nullable=False)
     )
     duration: int  # Duration in minutes
 
@@ -51,6 +51,13 @@ class Service(BaseModel, table=True):
     appointments: list["Appointment"] = Relationship(
         back_populates="services", link_model=AppointmentServiceLink
     )
+
+class ServiceCreate(PydanticBaseModel):
+    name: str
+    description: str
+    price: Decimal
+    duration: int
+    med_spa_id: int
 
 class ServiceUpdate(PydanticBaseModel):
 
