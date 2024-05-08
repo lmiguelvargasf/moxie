@@ -2,6 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum, auto
 
+from pydantic import BaseModel as PydanticBaseModel
 from pydantic import EmailStr
 from sqlmodel import DECIMAL, AutoString, Column, Field, Relationship, SQLModel
 
@@ -76,3 +77,9 @@ class Appointment(BaseModel, table=True):
     def total_price(self) -> Decimal:
         """Calculate total price from all associated services."""
         return sum(service.price for service in self.services if service.price)
+
+
+class AppointmentCreate(PydanticBaseModel):
+    med_spa_id: int
+    start_time: datetime
+    service_ids: list[int]
