@@ -32,6 +32,8 @@ def upgrade() -> None:
             status_enum,
             nullable=False,
         ),
+        sa.Column("total_duration", sa.Integer(), nullable=False),
+        sa.Column("total_price", sa.DECIMAL(precision=10, scale=2), nullable=False),
         sa.Column("med_spa_id", sa.Integer(), nullable=False),
         sa.Column(
             "created_at",
