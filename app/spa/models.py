@@ -23,9 +23,15 @@ class MedSpa(BaseModel, table=True):
     phone_number: str
     email: EmailStr = Field(sa_type=AutoString, unique=True, nullable=False)
 
-    services: list["Service"] = Relationship(back_populates="med_spa")
+    services: list["Service"] = Relationship(
+        back_populates="med_spa",
+        sa_relationship_kwargs={'lazy': 'selectin'}
+    )
 
-    appointments: list["Appointment"] = Relationship(back_populates="med_spa")
+    appointments: list["Appointment"] = Relationship(
+        back_populates="med_spa",
+        sa_relationship_kwargs={'lazy': 'selectin'}
+    )
 
 
 class AppointmentServiceLink(SQLModel, table=True):
@@ -49,7 +55,9 @@ class Service(BaseModel, table=True):
     med_spa: MedSpa = Relationship(back_populates="services")
 
     appointments: list["Appointment"] = Relationship(
-        back_populates="services", link_model=AppointmentServiceLink
+        back_populates="services",
+        link_model=AppointmentServiceLink,
+        sa_relationship_kwargs={'lazy': 'selectin'}
     )
 
 class ServiceCreate(PydanticBaseModel):
@@ -84,7 +92,9 @@ class Appointment(BaseModel, table=True):
 
     # Relationship with services
     services: list[Service] = Relationship(
-        back_populates="appointments", link_model=AppointmentServiceLink
+        back_populates="appointments",
+        link_model=AppointmentServiceLink,
+        sa_relationship_kwargs={'lazy': 'selectin'}
     )
 
 
