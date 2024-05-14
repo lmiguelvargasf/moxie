@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, time
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -101,6 +101,15 @@ async def create_appointment(
     ).all()
     if len(services) != len(appointment_data.service_ids):
         raise HTTPException(status_code=404, detail="One or more services not found")
+
+    start_time = appointment_data.start_time.time()
+    business_start = time(9, 0)
+    business_end = time(17, 0)
+
+    if not (business_start <= start_time <= business_end):
+        raise HTTPException(
+            status_code=400, detail="Appointment start time must be within business hours (9:00 AM to 5:00 PM)."
+        )
 
     appointment = Appointment(
         med_spa_id=appointment_data.med_spa_id,
