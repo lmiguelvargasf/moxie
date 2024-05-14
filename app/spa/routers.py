@@ -103,12 +103,26 @@ async def create_appointment(
         raise HTTPException(status_code=404, detail="One or more services not found")
 
     start_time = appointment_data.start_time.time()
+    start_date = appointment_data.start_time.date()
     business_start = time(9, 0)
     business_end = time(17, 0)
 
     if not (business_start <= start_time <= business_end):
         raise HTTPException(
-            status_code=400, detail="Appointment start time must be within business hours (9:00 AM to 5:00 PM)."
+            status_code=400,
+            detail=(
+                "Appointment start time must be within business hours "
+                "(9:00 AM to 5:00 PM)."
+            )
+        )
+
+    if start_date.weekday() >= 5:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Appointments can only be scheduled on weekdays "
+                "(Monday to Friday)."
+            ),
         )
 
     appointment = Appointment(
