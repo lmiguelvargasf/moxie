@@ -123,7 +123,7 @@ async def read_appointment(
 ) -> Appointment:
     appointment: Appointment | None = await session.get(Appointment, appointment_id)
 
-    if not appointment:
+    if appointment is None:
         raise HTTPException(
             status_code=404, detail=f"Appointment with ID {appointment_id} not found."
         )
@@ -137,7 +137,7 @@ async def update_appointment_status(
     session: AsyncSession = Depends(db_session),
 ) -> Appointment:
     appointment: Appointment | None = await session.get(Appointment, appointment_id)
-    if not appointment:
+    if appointment is None:
         raise HTTPException(
             status_code=404, detail=f"Appointment with ID {appointment_id} not found."
         )
