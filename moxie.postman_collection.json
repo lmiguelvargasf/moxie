@@ -14,7 +14,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Service E\",\n    \"description\": \"This is a silly description.\",\n    \"price\": 150.00,\n    \"duration\": 60,\n    \"med_spa_id\": 1\n}",
+					"raw": "{\n    \"name\": \"Service G\",\n    \"description\": \"This is a silly description.\",\n    \"price\": 40.00,\n    \"duration\": 15,\n    \"med_spa_id\": 1\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -158,7 +158,7 @@
 		{
 			"name": "Update Appointment",
 			"request": {
-				"method": "GET",
+				"method": "PATCH",
 				"header": [],
 				"url": {
 					"raw": "http://localhost:8000/appointments/1?status=completed",
